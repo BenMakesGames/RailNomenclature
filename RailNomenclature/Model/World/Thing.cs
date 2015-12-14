@@ -31,7 +31,11 @@ namespace RailNomenclature
 
         public bool ObeysCollisionRules = true;
 
-        protected List<SimpleRectangle> _collsion_rectangles = new List<SimpleRectangle>();
+        public bool IsAccelerating { get; protected set; }
+
+        protected List<SimpleRectangle> _collision_rectangles = new List<SimpleRectangle>();
+
+        protected List<Coordinate<int>> _previous_10_locations = new List<Coordinate<int>>();
 
         abstract public string Name();
         virtual public string Its() { return "it's"; }
@@ -43,7 +47,11 @@ namespace RailNomenclature
             Description = description;
 
             MoveTo(r, x, y);
+
+            IsAccelerating = false;
         }
+
+        virtual public bool IsFlushWithFloor() { return false; }
 
         public void ChangeDimensions(int w, int h)
         {
@@ -55,7 +63,7 @@ namespace RailNomenclature
 
         virtual protected void BuildCollisionRectangles()
         {
-            _collsion_rectangles.Add(new SimpleRectangle(-Width / 2, -Width / 2, Width, Width));
+            _collision_rectangles.Add(new SimpleRectangle(-Width / 2, -Width / 2, Width, Width));
         }
 
         public void MoveTo(float x, float y)
@@ -70,32 +78,38 @@ namespace RailNomenclature
                 Location.AddThingAtY(this);
         }
 
-        public void MoveTo(Room r, float x, float y)
+        virtual public void MoveTo(Room newLocation, float x, float y)
         {
-            if (r != Location && Location != null)
+            if (Location != null)
             {
-                Location.RemoveThing(this);
+                if (newLocation != Location)
+                {
+                    Location.RemoveThing(this);
 
-                if (r == null || Location.World != r.World)
-                    Location.World.Things.Remove(this);
+                    if (newLocation == null || Location.World != newLocation.World)
+                        Location.World.Things.Remove(this);
+                }
+                else
+                    Location.RemoveThingAtY(this);
             }
-            else if(Location != null)
-                Location.RemoveThingAtY(this);
 
             _x_center = x;
             _y_base = y;
 
-            if(r != Location && r != null)
+            if (newLocation != null)
             {
-                r.AddThing(this);
+                if (newLocation != Location)
+                {
+                    newLocation.AddThing(this);
 
-                if (Location == null || Location.World != r.World)
-                    r.World.Things.Add(this);
+                    if (Location == null || Location.World != newLocation.World)
+                        newLocation.World.Things.Add(this);
+                }
+                else
+                    newLocation.AddThingAtY(this);
             }
-            else if(r != null)
-                r.AddThingAtY(this);
 
-            Location = r;
+            Location = newLocation;
         }
 
         virtual public int ActionReach() { return Width; }
@@ -115,7 +129,12 @@ namespace RailNomenclature
 
         virtual public void PreStep()
         {
-            if (_x_velocity != 0 || _y_velocity != 0)
+            _previous_10_locations.Add(new Coordinate<int>((int)_x_center, (int)_y_base));
+            
+            if (_previous_10_locations.Count > 10)
+                _previous_10_locations.RemoveAt(0);
+
+            if (_y_velocity != 0)
             {
                 if(Location != null)
                     Location.RemoveThingAtY(this);
@@ -131,10 +150,21 @@ namespace RailNomenclature
 
             _x_center += _x_velocity;
             _y_base += _y_velocity;
-            _x_velocity *= 0.85f;
-            _y_velocity *= 0.85f;
 
-            if (ObeysCollisionRules && Location != null && Location.ThingCollidingWith(this) != null)
+            if (IsAccelerating)
+            {
+                _x_velocity *= 0.85f;
+                _y_velocity *= 0.85f;
+            }
+            else
+            {
+                _x_velocity *= 0.5f;
+                _y_velocity *= 0.5f;
+            }
+
+            IsAccelerating = false;
+
+            if (ObeysCollisionRules && Location != null && Location.ThingsCollidingWith(this).Count > 0)
             {
                 _x_center = oldXCenter;
                 _y_base = oldYBase;
@@ -164,6 +194,7 @@ namespace RailNomenclature
             if (_needs_location_readding_for_y != null && _needs_location_readding_for_y == Location)
             {
                 Location.AddThingAtY(this);
+                _needs_location_readding_for_y = null;
             }
         }
 
@@ -223,17 +254,17 @@ namespace RailNomenclature
 
         virtual public void Notify(SpriteSheetID picture)
         {
-            Location.World.PlayingState.QueueState(new GameStateSimpleModalPicture(TheGame.Instance.CurrentState, picture));
+            Location.World.PlayingState.QueueState(new GameStateSimpleModalPicture(picture));
         }
 
         virtual public void Notify(string title, string s)
         {
-            Location.World.PlayingState.QueueState(new GameStateSimpleModalMessage(TheGame.Instance.CurrentState, title, s));
+            Location.World.PlayingState.QueueState(new GameStateSimpleModalMessage(title, s));
         }
 
         virtual public void Notify(string title, List<string> s)
         {
-            Location.World.PlayingState.QueueState(new GameStateSimpleModalMessage(TheGame.Instance.CurrentState, title, s));
+            Location.World.PlayingState.QueueState(new GameStateSimpleModalMessage(title, s));
         }
 
         public void Destroy()
@@ -246,19 +277,35 @@ namespace RailNomenclature
             return x >= LeftX() && y >= TopY() && x < RightX() && y < BottomY();
         }
 
-        virtual public bool IsOverlapping(Thing t)
+        virtual public bool IsOverlapping(int x, int y, int width, int height)
         {
-            if (this is Character && t is RectangleStructure)
-            {
-
-            }
-
-            foreach (SimpleRectangle r in _collsion_rectangles)
+            foreach (SimpleRectangle r in _collision_rectangles)
             {
                 int rX = (int)X() + r.X;
                 int rY = (int)Y() + r.Y;
 
-                foreach (SimpleRectangle rT in t._collsion_rectangles)
+                if (
+                    rX < x + width &&
+                    rX + r.Width > x &&
+                    rY < y + height &&
+                    rY + r.Height > y
+                )
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        virtual public bool IsOverlapping(Thing t)
+        {
+            foreach (SimpleRectangle r in _collision_rectangles)
+            {
+                int rX = (int)X() + r.X;
+                int rY = (int)Y() + r.Y;
+
+                foreach (SimpleRectangle rT in t._collision_rectangles)
                 {
                     int rTX = (int)t.X() + rT.X;
                     int rTY = (int)t.Y() + rT.Y;

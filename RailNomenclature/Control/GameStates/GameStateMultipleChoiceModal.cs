@@ -33,8 +33,14 @@ namespace RailNomenclature
                 _options.Add(o.MaxWidth(TheGame.WIDTH / 2 / 9));
 
             UpdateMessageDimensions();
+        }
 
-            _previous_state = TheGame.Instance.CurrentState;
+        public override void EnterState()
+        {
+            base.EnterState();
+
+            if (_previous_state == null)
+                _previous_state = TheGame.Instance.CurrentState;
         }
 
         private void UpdateMessageDimensions()
@@ -72,7 +78,7 @@ namespace RailNomenclature
             }
         }
 
-        public override void Update()
+        public override void HandleInput()
         {
             if (MouseHandler.Instance.X() >= _x && MouseHandler.Instance.X() < _x + _message_pixel_width)
             {
@@ -87,6 +93,10 @@ namespace RailNomenclature
                     }
                 }
             }
+        }
+
+        public override void Update()
+        {
         }
     }
 }

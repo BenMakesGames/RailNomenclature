@@ -26,10 +26,14 @@ namespace RailNomenclature
             }
             else
             {
-                _world.HandleInput();
-
                 _world.Step();
             }
+        }
+
+        public override void HandleInput()
+        {
+            if (_game_state_queue.Count == 0)
+                _world.HandleInput();
         }
 
         public override void Draw()

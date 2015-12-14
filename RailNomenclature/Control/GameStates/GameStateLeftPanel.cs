@@ -17,6 +17,7 @@ namespace RailNomenclature
 
         public const int OPTION_NOTEPAD = 0;
         public const int OPTION_TELEPORTER = 1;
+        public const int OPTION_SWITCH_CHARACTERS = 2;
 
         private List<int> _options = new List<int>();
 
@@ -39,7 +40,7 @@ namespace RailNomenclature
             return BASE_WIDTH + (_panel_object == null ? 0 : _panel_object.Width());
         }
 
-        public override void Update()
+        public override void HandleInput()
         {
             _selected = -1;
 
@@ -64,14 +65,41 @@ namespace RailNomenclature
             {
                 switch (_options[_selected])
                 {
-                    case OPTION_NOTEPAD: ChangeState(new GameStateNotePad(this)); break;
+                    case OPTION_NOTEPAD:
+                        ChangeState(new GameStateNotePad(this));
+                        break;
+
+                    case OPTION_SWITCH_CHARACTERS:
+                        _world.ActiveCharacter = _world.Characters[(_world.Characters.IndexOf(_world.ActiveCharacter) + 1) % _world.Characters.Count];
+                        _world.Camera.ChangeTarget(_world.ActiveCharacter);
+                        break;
+
                     case OPTION_TELEPORTER:
-                        new TeleportStation(_world.ActiveCharacter.Location, (int)_world.ActiveCharacter.X(), (int)_world.ActiveCharacter.Y() - 4);
-                        _world.ActiveCharacter.TeleportStations--;
+                        int x = (int)_world.ActiveCharacter.X();
+                        int y = (int)_world.ActiveCharacter.Y() - 10;
+
+                        if (_world.ActiveCharacter.Location.ThingsOverlappingWith(x - 5, y - 5, 10, 10).Count == 0)
+                        {
+                            new TeleportStation(_world.ActiveCharacter.Location, x, y);
+                            _world.ActiveCharacter.TeleportStations--;
+                        }
+                        else if (_world.ActiveCharacter.Location.ThingsOverlappingWith(x - 5, y - 5 + 20, 10, 10).Count == 0)
+                        {
+                            new TeleportStation(_world.ActiveCharacter.Location, x, y + 20);
+                            _world.ActiveCharacter.TeleportStations--;
+                        }
+                        else
+                        {
+                            _world.ActiveCharacter.Notify(null, "There's not enough open space here.");
+                        }
+
                         break;
                 }
             }
+        }
 
+        public override void Update()
+        {
             RecalculateOptions();
         }
 
@@ -80,6 +108,9 @@ namespace RailNomenclature
             _options.Clear();
 
             _options.Add(OPTION_NOTEPAD);
+
+            if (_world.GetQuestValue(World.QUEST_CAN_SWITCH_BETWEEN_CHARACTERS) != 0)
+                _options.Add(OPTION_SWITCH_CHARACTERS);
 
             if (_world.ActiveCharacter.TeleportStations > 0)
                 _options.Add(OPTION_TELEPORTER);

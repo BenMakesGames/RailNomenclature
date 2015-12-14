@@ -10,13 +10,20 @@ namespace RailNomenclature
         private SpriteSheetID _picture;
         private string _name;
         private RGBA _color;
+        private int _y_offset;
 
-        public Picture(Room r, int x, int y, int w, int h, RGBA color, SpriteSheetID picture, string name)
+        public Picture(Room r, int x, int y, int w, int h, int yOffset, RGBA color, SpriteSheetID picture, string name)
             : base(r, x, y, w, h)
         {
             _picture = picture;
             _name = name;
             _color = color;
+            _y_offset = yOffset;
+        }
+
+        public override float Y()
+        {
+            return base.Y() + _y_offset;
         }
 
         public override string Name() { return _name; }

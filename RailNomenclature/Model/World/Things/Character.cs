@@ -9,7 +9,7 @@ namespace RailNomenclature
     public class Character: Thing
     {
         protected string _name;
-        protected Coordinate<int> _target_location;
+        protected TargetLocation _target_location;
 
         public float WalkSpeed { get; protected set; }
 
@@ -29,23 +29,22 @@ namespace RailNomenclature
         public RGBA ShirtColor { get; set; }
         public RGBA PantsColor { get; set; }
 
-        public Character(Room l, float x, float y, string name, string description)
-            : base(l, x, y, 0, 0, description)
+        public Character(Room l, float x, float y, int width, int height, string name, string description)
+            : base(l, x, y, width, height, description)
         {
             _name = name;
-
-            ChangeDimensions(RNG.NextInt(8, 12 + 1), RNG.NextInt(38, 53 + 1));
 
             SkinColor = SKIN_COLORS[RNG.NextInt(0, SKIN_COLORS.Length)];
             ShirtColor = CLOTHES_COLORS[RNG.NextInt(0, CLOTHES_COLORS.Length)];
             PantsColor = CLOTHES_COLORS[RNG.NextInt(0, CLOTHES_COLORS.Length)];
 
-            WalkSpeed = Height / 100f - RNG.NextFloat(0, 0.1f);
+            WalkSpeed = 0.6f;
 
             l.World.Characters.Add(this);
         }
 
         private float _hop_y, _hop_velocity;
+        private int _ignore_location_history_steps = 0; // used to allow player to start moving, when a new location is picked (see HandleInput() and SetPath())
 
         public void Hop()
         {
@@ -57,13 +56,19 @@ namespace RailNomenclature
         {
             if (_target_location != null)
             {
-                WalkToward(_target_location.X, _target_location.Y);
-                if (WithinDistance(_target_location.X, _target_location.Y, 5))
-                    _target_location = null;
+                if (_ignore_location_history_steps == 0 && _previous_10_locations[0].X == (int)_x_center && _previous_10_locations[0].Y == (int)_y_base)
+                    CancelPath();
+                else
+                {
+                    WalkToward(_target_location.X(), _target_location.Y());
+
+                    if (WithinDistance(_target_location, 5))
+                        CancelPath();
+                }
             }
         }
 
-        public void WalkToward(int x, int y)
+        public void WalkToward(float x, float y)
         {
             float dx = x - X();
             float dy = y - Y();
@@ -72,12 +77,32 @@ namespace RailNomenclature
             _x_velocity += WalkSpeed * dx / d;
             _y_velocity += WalkSpeed * dy / d;
 
+            IsAccelerating = true;
+
             Hop();
+        }
+
+        public void SetPath(float x, float y)
+        {
+            SetPath((int)x, (int)y);
+        }
+
+        public void CancelPath()
+        {
+            if (_target_location != null)
+            {
+                Location.RemoveThing(_target_location);
+                _ignore_location_history_steps = 0;
+                _target_location = null;
+            }
         }
 
         public void SetPath(int x, int y)
         {
-            _target_location = new Coordinate<int>(x, y);
+            CancelPath();
+
+            _ignore_location_history_steps = 5;
+            _target_location = new TargetLocation(Location, x, y, this);
         }
 
         public override void Step()
@@ -92,6 +117,9 @@ namespace RailNomenclature
                 _hop_y = 0;
                 _hop_velocity = 0;
             }
+
+            if (_ignore_location_history_steps > 0)
+                _ignore_location_history_steps--;
         }
 
         public override string Name()
@@ -171,6 +199,11 @@ namespace RailNomenclature
             return _inventory.Remove(t);
         }
 
+        public override string PrimaryAction()
+        {
+            return Location.World.ActiveCharacter == this ? "" : base.PrimaryAction();
+        }
+
         public override string SecondaryAction()
         {
             return Location.World.ActiveCharacter == this ? "" : "Talk";
@@ -179,6 +212,13 @@ namespace RailNomenclature
         public override int MaximumSecondaryActionDistance()
         {
             return TheGame.HEIGHT / 3;
+        }
+
+        public override void MoveTo(Room newLocation, float x, float y)
+        {
+            CancelPath();
+
+            base.MoveTo(newLocation, x, y);
         }
     }
 }

@@ -31,6 +31,8 @@ namespace RailNomenclature
             SpriteSheets.Add(SpriteSheetID.UI_LEFT_PANEL_ICONS, LoadSpriteSheet("Graphics/ui-left-panel", 64, 64));
             SpriteSheets.Add(SpriteSheetID.UI_MOUSE_ICONS, LoadSpriteSheet("Graphics/ui-mouse-actions", 15, 23));
             SpriteSheets.Add(SpriteSheetID.TELEPORTER, LoadSpriteSheet("Graphics/teleporter", 26, 34));
+            SpriteSheets.Add(SpriteSheetID.LEVER, LoadSpriteSheet("Graphics/lever", 18, 17));
+            SpriteSheets.Add(SpriteSheetID.MOVE_CURSOR, LoadSpriteSheet("Graphics/move-cursor", 30, 15));
         }
 
         private SpriteSheet LoadSpriteSheet(string file, int spriteWidth, int spriteHeight)

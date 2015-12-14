@@ -10,7 +10,7 @@ namespace RailNomenclature
         private int _message_pixel_width, _message_pixel_height;
         private string _title;
 
-        public GameStateSimpleModalMessage(GameState previousState, string title, string message): base(previousState)
+        public GameStateSimpleModalMessage(string title, string message): base()
         {
             _title = title;
             _messages.Add(message.MaxWidth(TheGame.WIDTH / 2 / 9));
@@ -18,7 +18,7 @@ namespace RailNomenclature
             UpdateMessageDimensions();
         }
 
-        public GameStateSimpleModalMessage(GameState previousState, string title, List<string> messages): base(previousState)
+        public GameStateSimpleModalMessage(string title, List<string> messages): base()
         {
             _title = title;
 

@@ -19,7 +19,18 @@ namespace RailNomenclature
         public Camera(Thing t)
         {
             _target = t;
-            CenterOn(_target);
+            Center();
+        }
+
+        public void ChangeTarget(Thing t)
+        {
+            _target = t;
+            Center();
+        }
+
+        public void Center()
+        {
+            CenterOn(_target.X(), _target.Y());
         }
 
         public void CenterOn(Thing t)
@@ -31,12 +42,19 @@ namespace RailNomenclature
         {
             X = x - TheGame.WIDTH / 2;
             Y = y - TheGame.HEIGHT / 2;
+
+            ConstrainWithinCameraBounds();
         }
 
         public void Step()
         {
             CenterToward(_target.X(), _target.Y());
 
+            ConstrainWithinCameraBounds();
+        }
+
+        private void ConstrainWithinCameraBounds()
+        {
             if (_target.Location != null)
             {
                 if (X < _target.Location.MinCameraX)

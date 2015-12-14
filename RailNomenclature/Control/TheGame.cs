@@ -88,9 +88,17 @@ namespace RailNomenclature
 
             MouseHandler.Instance.Update();
 
-            if(CurrentState != null)
-                CurrentState.Update();
+            if (CurrentState != null)
+            {
+                GameState previousState = CurrentState;
+                
+                CurrentState.HandleInput();
 
+                if(previousState == CurrentState)
+                    CurrentState.Update();
+            }
+
+            LeftPanel.HandleInput();
             LeftPanel.Update();
 
             base.Update(gameTime);

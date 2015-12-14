@@ -14,15 +14,22 @@ namespace RailNomenclature
 
         public LockedDelegate IsLocked = null;
 
-        public Door(Room l, int x, int y)
+        private int _exit_x_offset, _exit_y_offset;
+
+        public Door(Room l, int x, int y, int exitXOffset = 0, int exitYOffset = 0)
             : base(l, x, y, 32, 64)
         {
+            _exit_x_offset = exitXOffset;
+            _exit_y_offset = exitYOffset;
         }
 
         public override string Name()
         {
             return "Door to " + OtherSide.Location.Name;
         }
+
+        public int ExitX() { return (int)X() + _exit_x_offset; }
+        public int ExitY() { return (int)Y() + _exit_y_offset; }
 
         public bool PairWith(Door d)
         {
@@ -62,7 +69,12 @@ namespace RailNomenclature
         public override void DoPrimaryAction(Thing a)
         {
             if (IsLocked == null || !IsLocked(this, a))
-                a.MoveTo(OtherSide.Location, OtherSide.X(), OtherSide.Y() + 10);
+            {
+                a.MoveTo(OtherSide.Location, OtherSide.ExitX(), OtherSide.ExitY());
+                
+                if (a == Location.World.ActiveCharacter)
+                    Location.World.Camera.Center();
+            }
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    public class RectangleStructure: Thing
+    public class RectangleStructure: Switchable
     {
         private RGBA _color;
         private RGBA _roof_color;
@@ -17,21 +17,34 @@ namespace RailNomenclature
             _color = color;
             _roof_height = roofHeight;
             _roof_color = roofColor;
+
+            _collision_rectangles = new List<SimpleRectangle>();
+            BuildCollisionRectangles();
         }
 
         public override string Name() { return "Building"; }
 
         protected override void BuildCollisionRectangles()
         {
-            _collsion_rectangles.Add(new SimpleRectangle(-Width / 2, -_roof_height, Width, _roof_height));
+            _collision_rectangles.Add(new SimpleRectangle(-Width / 2, -_roof_height, Width, _roof_height));
         }
 
         public override void Draw(Camera c)
         {
-            Assets.WhitePixel.DrawRectangle(LeftX() - c.X, TopY() - c.Y, Width, Height, _color);
-            Assets.WhitePixel.DrawRectangle(LeftX() - c.X, TopY() - c.Y - _roof_height, Width, _roof_height, _roof_color);
+            if (IsOn())
+            {
+                Assets.WhitePixel.DrawRectangle(LeftX() - c.X, TopY() - c.Y, Width, Height, _color);
+                Assets.WhitePixel.DrawRectangle(LeftX() - c.X, TopY() - c.Y - _roof_height, Width, _roof_height, _roof_color);
+            }
 
             base.Draw(c);
+        }
+
+        public override void Step()
+        {
+            base.Step();
+
+            ObeysCollisionRules = IsOn();
         }
     }
 }

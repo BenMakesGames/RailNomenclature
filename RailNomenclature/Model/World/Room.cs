@@ -84,33 +84,32 @@ namespace RailNomenclature
 
         public void RemoveThingAtY(Thing t)
         {
-            _things_sorted_by_y[(int)t.Y()].Remove(t);
+            int y = t.IsFlushWithFloor() ? 0 : (int)t.Y();
+
+            _things_sorted_by_y[y].Remove(t);
         }
 
         public void AddThingAtY(Thing t)
         {
-            _things_sorted_by_y[(int)t.Y()].Add(t);
+            int y = t.IsFlushWithFloor() ? 0 : (int)t.Y();
+
+            _things_sorted_by_y[y].Add(t);
         }
 
         public void AddThing(Thing t)
         {
             _things.Add(t);
             AddThingAtY(t);
-
-            if (t.Y() < 0)
-                t.MoveTo(t.X(), 0);
-            else if (t.Y() >= MaxAllowedHeight)
-                t.MoveTo(t.X(), MaxAllowedHeight - 1);
         }
 
-        public void Draw()
+        public void Draw(Camera c)
         {
             TheGame.Instance.GraphicsDevice.Clear(BackgroundColor.Color);
 
             for(int i = 0; i < MaxAllowedHeight; i++)
             {
                 foreach (Thing t in _things_sorted_by_y[i])
-                    t.Draw(World.Camera);
+                    t.Draw(c);
             }
         }
 
@@ -135,15 +134,55 @@ namespace RailNomenclature
             return null;
         }
 
-        public Thing ThingCollidingWith(Thing target)
+        public List<Thing> ThingsOverlappingWith(int x, int y, int w, int h, int limit = 1)
         {
+            List<Thing> overlapping = new List<Thing>();
+
             foreach (Thing t in _things)
             {
-                if (target != t && target.IsOverlapping(t))
-                    return t;
+                if (t.IsOverlapping(x, y, w, h))
+                {
+                    overlapping.Add(t);
+                    if (overlapping.Count >= limit)
+                        return overlapping;
+                }
             }
 
-            return null;
+            return overlapping;
+        }
+
+        public List<Thing> ThingsOverlappingWith(Thing target, int limit = 1)
+        {
+            List<Thing> overlapping = new List<Thing>();
+
+            foreach (Thing t in _things)
+            {
+                if (target != t && t.IsOverlapping(target))
+                {
+                    overlapping.Add(t);
+                    if (overlapping.Count >= limit)
+                        return overlapping;
+                }
+            }
+
+            return overlapping;
+        }
+
+        public List<Thing> ThingsCollidingWith(Thing target, int limit = 1)
+        {
+            List<Thing> colliding = new List<Thing>();
+
+            foreach (Thing t in _things)
+            {
+                if (target != t && t.ObeysCollisionRules && t.IsOverlapping(target))
+                {
+                    colliding.Add(t);
+                    if (colliding.Count >= limit)
+                        return colliding;
+                }
+            }
+
+            return colliding;
         }
     }
 }

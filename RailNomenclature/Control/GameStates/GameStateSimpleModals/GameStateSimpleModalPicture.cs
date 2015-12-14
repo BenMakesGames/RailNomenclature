@@ -6,13 +6,11 @@ namespace RailNomenclature
 {
     public class GameStateSimpleModalPicture: GameStateSimpleModal
     {
-        private GameState _previous_state;
         private SpriteSheetID _picture;
         private int _message_pixel_width, _message_pixel_height;
 
-        public GameStateSimpleModalPicture(GameState previousState, SpriteSheetID picture): base(previousState)
+        public GameStateSimpleModalPicture(SpriteSheetID picture): base()
         {
-            _previous_state = previousState;
             _picture = picture;
 
             UpdateMessageDimensions();

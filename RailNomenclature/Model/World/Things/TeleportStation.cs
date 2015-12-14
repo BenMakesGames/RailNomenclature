@@ -6,8 +6,8 @@ namespace RailNomenclature
     {
         private int _animation_step = 0;
 
-        public TeleportStation(Room r, int x, int y, string description = "Teleport Station")
-            : base(r, x, y, 30, 40, description)
+        public TeleportStation(Room r, int x, int y, int w = 26, int h = 34, string description = "Teleport Station")
+            : base(r, x, y, w, h, description)
         {
             r.World.AddTeleporter(this);
         }
@@ -21,7 +21,7 @@ namespace RailNomenclature
 
         protected override void BuildCollisionRectangles()
         {
-            _collsion_rectangles.Add(new SimpleRectangle(-Width / 2, -2, Width, 2));
+            _collision_rectangles.Add(new SimpleRectangle(-Width / 2, -2, Width, 2));
         }
 
         public override void Step()
@@ -50,9 +50,16 @@ namespace RailNomenclature
         public override void DoPrimaryAction(Thing a)
         {
             TeleportStation t = Location.World.NextTeleporter(this);
-            
-            if(t != null && t != this)
+
+            if (t != null && t != this)
+            {
                 a.MoveTo(t.Location, t.X(), t.Y() + 10);
+
+                if (a == Location.World.ActiveCharacter)
+                    Location.World.Camera.Center();
+            }
+            else
+                a.Notify(null, "At least two teleports must be set up in order to use one.");
         }
 
         public override void DoSecondaryAction(Thing a)

@@ -8,6 +8,7 @@ namespace RailNomenclature
         virtual public void EnterState() { }
         virtual public void LeaveState() { }
 
+        abstract public void HandleInput();
         abstract public void Update();
         abstract public void Draw();
     }

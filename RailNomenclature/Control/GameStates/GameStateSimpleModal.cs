@@ -8,12 +8,19 @@ namespace RailNomenclature
     {
         private GameState _previous_state;
 
-        public GameStateSimpleModal(GameState previousState)
+        public GameStateSimpleModal()
         {
-            _previous_state = previousState;
         }
 
-        public override void Update()
+        public override void EnterState()
+        {
+            base.EnterState();
+
+            if (_previous_state == null)
+                _previous_state = TheGame.Instance.CurrentState;
+        }
+
+        public override void HandleInput()
         {
             if (!TheGame.Instance.IsMouseOnUIElement())
             {
@@ -23,6 +30,10 @@ namespace RailNomenclature
                         TheGame.Instance.ChangeState(_previous_state);
                 }
             }
+        }
+
+        public override void Update()
+        {
         }
 
         abstract protected bool NextMessage();

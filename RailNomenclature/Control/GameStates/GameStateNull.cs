@@ -13,5 +13,9 @@ namespace RailNomenclature
         public override void Update()
         {
         }
+
+        public override void HandleInput()
+        {
+        }
     }
 }

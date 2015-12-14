@@ -54,6 +54,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Control\GameState.cs" />
+    <Compile Include="Control\GameStates\GameStateCutScene.cs" />
+    <Compile Include="Control\GameStates\GameStateCutScenes\GameStateCutSceneProfessorJoins.cs" />
     <Compile Include="Control\GameStates\GameStateLeftPanel.cs" />
     <Compile Include="Control\GameStates\GameStateMultipleChoiceModal.cs" />
     <Compile Include="Model\Engine\LeftPanelObject.cs" />
@@ -80,13 +82,24 @@
     <Compile Include="Model\Util\RNG.cs" />
     <Compile Include="Model\Util\StringUtil.cs" />
     <Compile Include="Model\Util\Texture2DUtil.cs" />
+    <Compile Include="Model\World\Rooms\RailLinePuzzleRoom.cs" />
+    <Compile Include="Model\World\Things\Characters\ThePlayer.cs" />
     <Compile Include="Model\World\Things\Picture.cs" />
-    <Compile Include="Model\World\Things\Pictures\ChicagoMap.cs" />
-    <Compile Include="Model\World\Things\RectangleStructure.cs" />
+    <Compile Include="Model\World\Things\Pictures\RailMap.cs" />
+    <Compile Include="Model\World\Things\Switchable.cs" />
+    <Compile Include="Model\World\Things\Switches\AndSwitch.cs" />
+    <Compile Include="Model\World\Things\Switches\ToggleSwitch.cs" />
+    <Compile Include="Model\World\Things\Switches\NotSwitch.cs" />
+    <Compile Include="Model\World\Things\Switches\XorSwitch.cs" />
+    <Compile Include="Model\World\Things\Switches\OrSwitch.cs" />
+    <Compile Include="Model\World\Things\Switches\PressurePlate.cs" />
+    <Compile Include="Model\World\Things\Switchables\RectangleStructure.cs" />
     <Compile Include="Model\World\Things\Characters\ProfessorRed.cs" />
+    <Compile Include="Model\World\Things\Switch.cs" />
+    <Compile Include="Model\World\Things\TargetLocation.cs" />
     <Compile Include="Model\World\Things\TeleportStations\HomeBase.cs" />
     <Compile Include="Model\World\Things\TeleportStation.cs" />
-    <Compile Include="Model\World\Things\Wall.cs" />
+    <Compile Include="Model\World\Things\Switchables\Wall.cs" />
     <Compile Include="Model\World\World.cs" />
     <Compile Include="Model\World\Things\Door.cs" />
     <Compile Include="Model\World\Room.cs" />
@@ -109,6 +122,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Graphics\font.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\lever.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\move-cursor.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Graphics\rail-map.png">

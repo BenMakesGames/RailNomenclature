@@ -7,20 +7,26 @@ namespace RailNomenclature
 {
     public class ProfessorRed: Character
     {
-        public const string DESCRIPTION = "Professor Red. An eccentric character, easily excited by ancient American city planning.";
+        public const string DESCRIPTION = "Professor Red. An eccentric character, easily excited by ancient American archaeology.";
 
         public const int STATE_NEEDS_INTRODUCTION = 0;
         public const int STATE_WAITING_FOR_INFORMATION = 1;
         public const int STATE_WAITING_FOR_INFORMATION_AGAIN = 2;
         public const int STATE_WAITING_FOR_PLAYER_TO_EXPLORE = 3;
+        public const int STATE_ASTOUNDED = 4;
 
         private int _current_state = STATE_NEEDS_INTRODUCTION;
 
-        public ProfessorRed(Room r, float x, float y): base(r, x, y, "Professor Red", DESCRIPTION)
+        public ProfessorRed(Room r, float x, float y): base(r, x, y, 8, 50, "Professor Red", DESCRIPTION)
         {
             // @TODO: DEBUGGING; REMOVE FOR RELEASE:
             /*_current_state = STATE_WAITING_FOR_INFORMATION;
             Location.World.SetQuestValue(World.QUEST_PLAYER_SAW_RAIL_MAP, 1);*/
+
+            ShirtColor = RGBA.DarkRed;
+            PantsColor = Microsoft.Xna.Framework.Color.FloralWhite;
+
+            TeleportStations = 1;
         }
 
         public bool HasGivenIntroductionTalk()
@@ -35,17 +41,19 @@ namespace RailNomenclature
                 case STATE_NEEDS_INTRODUCTION:
                     a.Notify(Name(), new List<string>() {
                         "Oh, hello! You must be the new grad student!",
-                        "I'm Professor Red! Sorry, I guess you already knew that.",
+                        "I'm Professor Red, of course, but I suppose you already knew that! Haha!",
                         "I'm so excited to have someone else to help me out! I've just stumbled upon this old building. It was a train station in ancient America!",
-                        "I have some theories about how these were organized. Maybe we could put one to the test! Care to help me out?",
-                        "Of course you would!",
-                        "Go take a look in the building over there. I'm sure there will be SOMETHING telling. I'm interested in knowing how their rail system was arranged.",
+                        "I have some theories about how these were organized. Maybe we could put one to the test!",
+                        "Go have a look inside the station. I'm sure there will be SOMETHING there that will tell us how their rail system was arranged.",
                         "Oh, and take this portable Teleport Station, in case you get lost!",
                         "I'll be here, going over my notes. I'm trying to figure out which American city this must have been..."
                     });
 
                     if (a is Character)
+                    {
                         (a as Character).TeleportStations++;
+                        (a as Character).Notify(null, "(You can now place and pick up a portable Teleport station! Use the teleporter icon in the left-hand bar!)");
+                    }
 
                     _current_state = STATE_WAITING_FOR_INFORMATION;
                     
@@ -87,7 +95,16 @@ namespace RailNomenclature
                 case STATE_WAITING_FOR_PLAYER_TO_EXPLORE:
                     a.Notify(Name(), "Why don't you go see what else you can find? I'll join you in a couple minutes, as soon as I finish up these notes.");
                     break;
+
+                case STATE_ASTOUNDED:
+                    a.Notify(Name(), "Isn't this amazing?!");
+                    break;
             }
+        }
+
+        public void BeAstounded()
+        {
+            _current_state = STATE_ASTOUNDED;
         }
 
         private void QuizAboutRailMapQuestion1(Thing a)
@@ -167,6 +184,7 @@ namespace RailNomenclature
                 });
 
                 _current_state = STATE_WAITING_FOR_PLAYER_TO_EXPLORE;
+                Location.World.SetQuestValue(World.QUEST_EXPLORE_STATION, 1);
             }
         }
     }

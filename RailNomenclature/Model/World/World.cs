@@ -21,7 +21,9 @@ namespace RailNomenclature
         public GameStatePlaying PlayingState { get; set; }
 
         public const int QUEST_PLAYER_SAW_RAIL_MAP = 0;
-        public const int QUEST_RAIL_MAP_QUIZ_SCORE = 0;
+        public const int QUEST_RAIL_MAP_QUIZ_SCORE = 1;
+        public const int QUEST_CAN_SWITCH_BETWEEN_CHARACTERS = 2;
+        public const int QUEST_EXPLORE_STATION = 3;
         
         public Dictionary<int, int> QuestVariables = new Dictionary<int, int>();
 
@@ -32,28 +34,18 @@ namespace RailNomenclature
             Characters = new List<Character>();
 
             Room baseCamp = BuildBaseCamp();
-            
-            Room caveEntrance = new Room(this, 1400, 800, "Cave Entrance");
-            caveEntrance.SetBackgroundColor(new RGBA(153));
-
-            /*LinkLocationsWithDoor(
-                baseCamp, baseCamp.Width * 4 / 5, 181 + 48,
-                caveEntrance, 200, 200
-            );*/
-            Door d1 = new Door(baseCamp, baseCamp.Width * 4 / 5, 181 + 48);
-            Door d2 = new Door(caveEntrance, 200, 200);
-
-            d1.PairWith(d2);
-
-            new RailMap(caveEntrance, 400, 160);
 
             // add characters and attach camera
             ProfessorRed professorRed = new ProfessorRed(baseCamp, 200, TheGame.HEIGHT / 2);
-            ActiveCharacter = new Character(baseCamp, 50, TheGame.HEIGHT - 32, "You", "It's just me.");
 
-            new HomeBase(baseCamp, 400, 250, professorRed);
+            Room stationEntrance = new Room(this, 960, 960, "Station Entrance");
+            stationEntrance.SetBackgroundColor(new RGBA(153));
+            new Wall(stationEntrance, 960 / 2, 99, 960, 99, new RGBA(96));
 
-            Camera = new Camera(ActiveCharacter);
+            Door d1 = new Door(baseCamp, baseCamp.Width * 4 / 5, 181 + 48, 0, 10);
+            Door d2 = new Door(stationEntrance, 960 / 3, 960, 0, -10);
+
+            d1.PairWith(d2);
 
             d1.IsLocked = delegate(Door d, Thing t)
             {
@@ -62,6 +54,29 @@ namespace RailNomenclature
                 t.Notify(professorRed.Name(), "Eh? Who's that? Come say hello!");
                 return true;
             };
+
+            Room mapRoom = new Room(this, TheGame.WIDTH, TheGame.HEIGHT, "Map Room");
+
+            LinkLocationsWithDoor(
+                mapRoom,
+                100, 100, 10,
+                stationEntrance,
+                960 * 2 /3, 960, -10
+            );
+
+            new RailMap(mapRoom, 400, 100);
+            new Wall(mapRoom, mapRoom.Width / 2, 99, mapRoom.Width, 99, RGBA.DarkRed);
+
+            Room railLineRoom = new RailLinePuzzleRoom(this);
+            
+            LinkLocationsWithDoor(
+                stationEntrance,
+                960 / 2, 100, 10,
+                railLineRoom, 100, railLineRoom.Height, -10
+            );
+
+            ActiveCharacter = new ThePlayer(baseCamp, baseCamp.Width / 2 - 10, baseCamp.Height - 30);
+            Camera = new Camera(ActiveCharacter);
         }
 
         private Room BuildBaseCamp()
@@ -69,7 +84,7 @@ namespace RailNomenclature
             Room baseCamp = new Room(this, 1000, TheGame.HEIGHT, "Base Camp");
             baseCamp.SetBackgroundColor(new RGBA(89, 135, 3));
 
-            baseCamp.MinCharacterY = 182;
+            new HomeBase(baseCamp, 400, 250);
 
             //LinkLocationsWithDoor(Street, 800, store, 10);
 
@@ -85,10 +100,10 @@ namespace RailNomenclature
             return baseCamp;
         }
 
-        protected void LinkLocationsWithDoor(Room l1, int x1, int y1, Room l2, int x2, int y2)
+        protected void LinkLocationsWithDoor(Room l1, int x1, int y1, int exitY1, Room l2, int x2, int y2, int exitY2)
         {
-            Door d1 = new Door(l1, x1, y1);
-            Door d2 = new Door(l2, x2, y2);
+            Door d1 = new Door(l1, x1, y1, 0, exitY1);
+            Door d2 = new Door(l2, x2, y2, 0, exitY2);
 
             d1.PairWith(d2);
         }
@@ -139,25 +154,26 @@ namespace RailNomenclature
             FindActionableThingAtCursor();
         }
 
+        // called by GameStatePlaying
         public void HandleInput()
         {
             if (TheGame.Instance.IsMouseOnUIElement()) return;
 
-            if(MouseHandler.Instance.IsLeftClicking(true) && ActionableThingUnderCursor != null)
+            if (MouseHandler.Instance.IsLeftClicking(true) && ActionableThingUnderCursor != null && ActionableThingUnderCursor.PrimaryAction() != "")
             {
                 if (ActionableThingUnderCursor.WithinDistance(ActiveCharacter, ActiveCharacter.ActionReach() + ActionableThingUnderCursor.MaximumPrimaryActionDistance()))
                     ActionableThingUnderCursor.DoPrimaryAction(ActiveCharacter);
                 else
                     AddFlashMessage(ActionableThingUnderCursor.Its().UppercaseFirst() + " too far away.");
             }
-            else if (MouseHandler.Instance.IsRightClicking(true) && ActionableThingUnderCursor != null)
+            else if (MouseHandler.Instance.IsRightClicking(true) && ActionableThingUnderCursor != null && ActionableThingUnderCursor.SecondaryAction() != "")
             {
                 if (ActionableThingUnderCursor.WithinDistance(ActiveCharacter, ActiveCharacter.ActionReach() + ActionableThingUnderCursor.MaximumSecondaryActionDistance()))
                     ActionableThingUnderCursor.DoSecondaryAction(ActiveCharacter);
                 else
                     AddFlashMessage(ActionableThingUnderCursor.Its().UppercaseFirst() + " too far away.");
             }
-            else if (MouseHandler.Instance.IsLeftClicking())
+            else if (MouseHandler.Instance.IsLeftClicking(true))
             {
                 if (ActionableThingUnderCursor == null)
                     ActiveCharacter.SetPath((int)(MouseHandler.Instance.X() + Camera.X), (int)(MouseHandler.Instance.Y() + Camera.Y));
@@ -171,11 +187,11 @@ namespace RailNomenclature
 
         public void Draw()
         {
-            ActiveCharacter.Location.Draw();
+            if(ActiveCharacter == Camera._target)
+                ActiveCharacter.Location.Draw(Camera);
 
             if (ActionableThingUnderCursor != null)
                 ActionableThingUnderCursor.DrawInstructions(Camera);
-
 
             int y = 16;
 
@@ -247,6 +263,17 @@ namespace RailNomenclature
         public void RemoveTeleporter(TeleportStation t)
         {
             _teleporters.Remove(t);
+        }
+
+        public Character FindCharacter(Type characterType)
+        {
+            foreach (Character c in Characters)
+            {
+                if (c.GetType() == characterType)
+                    return c;
+            }
+
+            return null;
         }
     }
 }

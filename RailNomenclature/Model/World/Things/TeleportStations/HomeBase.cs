@@ -7,12 +7,9 @@ namespace RailNomenclature
 {
     public class HomeBase: TeleportStation
     {
-        private ProfessorRed _professor;
-
-        public HomeBase(Room r, int x, int y, ProfessorRed professor)
-            : base(r, x, y, "Home Base")
+        public HomeBase(Room r, int x, int y)
+            : base(r, x, y, 30, 40, "Home Base")
         {
-            _professor = professor;
         }
 
         public override string Name() { return "Home Base"; }
@@ -25,14 +22,6 @@ namespace RailNomenclature
         public override void DoSecondaryAction(Thing a)
         {
             // nothing
-        }
-
-        public override void DoPrimaryAction(Thing a)
-        {
-            if (_professor.HasGivenIntroductionTalk())
-                base.DoPrimaryAction(a);
-            else
-                a.Notify(null, "But there's no telling where it might go...");
         }
     }
 }

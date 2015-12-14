@@ -19,10 +19,12 @@ namespace RailNomenclature
             // @TODO: draw stuff
         }
 
+        public override void HandleInput()
+        {
+        }
+
         public override void Update()
         {
-            /*if (MouseHandler.Instance.IsLeftClicking(true))
-                TheGame.Instance.ChangeState(_previous_state);*/
         }
 
         public override int Width()

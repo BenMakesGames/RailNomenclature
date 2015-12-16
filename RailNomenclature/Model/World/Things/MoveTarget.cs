@@ -5,11 +5,11 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    public class TargetLocation: Thing
+    abstract public class MoveTarget : Thing
     {
-        Character _user;
+        protected Character _user;
 
-        public TargetLocation(Room r, int x, int y, Character u)
+        public MoveTarget(Room r, Character u, float x, float y)
             : base(r, x, y, 30, 15)
         {
             _user = u;
@@ -39,5 +39,9 @@ namespace RailNomenclature
 
         public override string PrimaryAction() { return ""; }
         public override string SecondaryAction() { return ""; }
+
+        virtual public void OnArrive() { }
+        virtual public void OnBlocked() { }
+        virtual public void OnCancel() { }
     }
 }

@@ -5,7 +5,6 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    [Serializable]
     public class Door: Thing
     {
         public delegate bool LockedDelegate(Door door, Thing actor);

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    abstract public class Switchable: Thing
+    abstract public class Switchable : Thing
     {
         private Switch _switch;
 

@@ -2,7 +2,6 @@
 
 namespace RailNomenclature
 {
-    [Serializable]
     public class Coordinate<T>
     {
         public T X, Y;

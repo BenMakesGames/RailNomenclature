@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    public class XorSwitch: Switch
+    public class XorSwitch : Switch
     {
         private Switch _s1, _s2;
 

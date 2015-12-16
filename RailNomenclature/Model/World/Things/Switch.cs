@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    abstract public class Switch: Thing
+    abstract public class Switch : Thing
     {
         abstract public bool IsActivated();
 

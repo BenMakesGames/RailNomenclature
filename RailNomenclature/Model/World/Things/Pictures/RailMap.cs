@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    public class RailMap: Picture
+    public class RailMap : Picture
     {
         public RailMap(Room r, int x, int y)
             : base(r, x, y, 25, 20, -20, RGBA.White, SpriteSheetID.RAIL_MAP, "Map")

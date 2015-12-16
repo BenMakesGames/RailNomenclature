@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    public class ToggleSwitch: Switch
+    public class ToggleSwitch : Switch
     {
         private RGBA _color;
         private bool _is_on = false;

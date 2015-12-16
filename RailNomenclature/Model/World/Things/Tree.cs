@@ -5,7 +5,6 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    [Serializable]
     public class Tree: Thing
     {
         public static readonly RGBA LEAF_COLOR = new RGBA(61, 103, 33);

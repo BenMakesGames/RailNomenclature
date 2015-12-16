@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    public class AndSwitch: Switch
+    public class AndSwitch : Switch
     {
         private Switch _s1, _s2;
 

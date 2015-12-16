@@ -84,6 +84,8 @@
     <Compile Include="Model\Util\Texture2DUtil.cs" />
     <Compile Include="Model\World\Rooms\RailLinePuzzleRoom.cs" />
     <Compile Include="Model\World\Things\Characters\ThePlayer.cs" />
+    <Compile Include="Model\World\Things\MoveTargets\MoveTargetThingAction.cs" />
+    <Compile Include="Model\World\Things\MoveTargets\MoveTargetCoordinate.cs" />
     <Compile Include="Model\World\Things\Picture.cs" />
     <Compile Include="Model\World\Things\Pictures\RailMap.cs" />
     <Compile Include="Model\World\Things\Switchable.cs" />
@@ -96,7 +98,7 @@
     <Compile Include="Model\World\Things\Switchables\RectangleStructure.cs" />
     <Compile Include="Model\World\Things\Characters\ProfessorRed.cs" />
     <Compile Include="Model\World\Things\Switch.cs" />
-    <Compile Include="Model\World\Things\TargetLocation.cs" />
+    <Compile Include="Model\World\Things\MoveTarget.cs" />
     <Compile Include="Model\World\Things\TeleportStations\HomeBase.cs" />
     <Compile Include="Model\World\Things\TeleportStation.cs" />
     <Compile Include="Model\World\Things\Switchables\Wall.cs" />

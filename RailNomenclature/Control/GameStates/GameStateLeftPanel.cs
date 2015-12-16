@@ -78,12 +78,12 @@ namespace RailNomenclature
                         int x = (int)_world.ActiveCharacter.X();
                         int y = (int)_world.ActiveCharacter.Y() - 10;
 
-                        if (_world.ActiveCharacter.Location.ThingsOverlappingWith(x - 5, y - 5, 10, 10).Count == 0)
+                        if (_world.ActiveCharacter.Location.ThingsCollidingWith(x - 5, y - 5, 10, 10).Count == 0)
                         {
                             new TeleportStation(_world.ActiveCharacter.Location, x, y);
                             _world.ActiveCharacter.TeleportStations--;
                         }
-                        else if (_world.ActiveCharacter.Location.ThingsOverlappingWith(x - 5, y - 5 + 20, 10, 10).Count == 0)
+                        else if (_world.ActiveCharacter.Location.ThingsCollidingWith(x - 5, y - 5 + 20, 10, 10).Count == 0)
                         {
                             new TeleportStation(_world.ActiveCharacter.Location, x, y + 20);
                             _world.ActiveCharacter.TeleportStations--;

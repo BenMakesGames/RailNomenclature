@@ -5,7 +5,6 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    [Serializable]
     abstract public class Thing
     {
         protected SpriteSheetID _sprite_sheet_id;
@@ -66,15 +65,22 @@ namespace RailNomenclature
             _collision_rectangles.Add(new SimpleRectangle(-Width / 2, -Width / 2, Width, Width));
         }
 
+        public void MoveTo(Thing t)
+        {
+            MoveTo(t.X(), t.Y());
+        }
+
         public void MoveTo(float x, float y)
         {
-            if (Location != null)
+            bool yChanged = (int)y != (int)_y_base;
+
+            if (Location != null && yChanged)
                 Location.RemoveThingAtY(this);
 
             _x_center = x;
             _y_base = y;
 
-            if (Location != null)
+            if (Location != null && yChanged)
                 Location.AddThingAtY(this);
         }
 

@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework;
 
 namespace RailNomenclature
 {
-    [Serializable]
     public class Room
     {
         public World World { get; protected set; }
@@ -166,6 +165,23 @@ namespace RailNomenclature
             }
 
             return overlapping;
+        }
+
+        public List<Thing> ThingsCollidingWith(int x, int y, int w, int h, int limit = 1)
+        {
+            List<Thing> colliding = new List<Thing>();
+
+            foreach (Thing t in _things)
+            {
+                if (t.ObeysCollisionRules && t.IsOverlapping(x, y, w, h))
+                {
+                    colliding.Add(t);
+                    if (colliding.Count >= limit)
+                        return colliding;
+                }
+            }
+
+            return colliding;
         }
 
         public List<Thing> ThingsCollidingWith(Thing target, int limit = 1)

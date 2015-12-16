@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    public class NotSwitch: Switch
+    public class NotSwitch : Switch
     {
         private Switch _s;
 

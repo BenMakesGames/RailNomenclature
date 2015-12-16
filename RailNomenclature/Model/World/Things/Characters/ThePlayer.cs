@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    public class ThePlayer: Character
+    public class ThePlayer : Character
     {
         public ThePlayer(Room r, int x, int y): base(r, x, y, 10, 44, "Me", "It's me!")
         {

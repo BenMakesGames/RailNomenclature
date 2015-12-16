@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace RailNomenclature
 {
-    [Serializable]
     public class World
     {
         public List<Room> Locations { get; protected set; }
@@ -154,6 +153,32 @@ namespace RailNomenclature
             FindActionableThingAtCursor();
         }
 
+        public void TryPrimaryAction(Character actor, Thing target, bool walkIfFail = false)
+        {
+            if (target.WithinDistance(actor, actor.ActionReach() + target.MaximumPrimaryActionDistance()))
+                target.DoPrimaryAction(actor);
+            else
+            {
+                if(walkIfFail)
+                    actor.SetPath(target, target.PrimaryAction());
+                else
+                    AddFlashMessage(target.Its().UppercaseFirst() + " too far away.");
+            }
+        }
+
+        public void TrySecondaryAction(Character actor, Thing target, bool walkIfFail = false)
+        {
+            if (target.WithinDistance(actor, actor.ActionReach() + target.MaximumSecondaryActionDistance()))
+                target.DoSecondaryAction(actor);
+            else
+            {
+                if (walkIfFail)
+                    actor.SetPath(target, target.SecondaryAction());
+                else
+                    AddFlashMessage(target.Its().UppercaseFirst() + " too far away.");
+            }
+        }
+
         // called by GameStatePlaying
         public void HandleInput()
         {
@@ -161,17 +186,11 @@ namespace RailNomenclature
 
             if (MouseHandler.Instance.IsLeftClicking(true) && ActionableThingUnderCursor != null && ActionableThingUnderCursor.PrimaryAction() != "")
             {
-                if (ActionableThingUnderCursor.WithinDistance(ActiveCharacter, ActiveCharacter.ActionReach() + ActionableThingUnderCursor.MaximumPrimaryActionDistance()))
-                    ActionableThingUnderCursor.DoPrimaryAction(ActiveCharacter);
-                else
-                    AddFlashMessage(ActionableThingUnderCursor.Its().UppercaseFirst() + " too far away.");
+                TryPrimaryAction(ActiveCharacter, ActionableThingUnderCursor, true);
             }
             else if (MouseHandler.Instance.IsRightClicking(true) && ActionableThingUnderCursor != null && ActionableThingUnderCursor.SecondaryAction() != "")
             {
-                if (ActionableThingUnderCursor.WithinDistance(ActiveCharacter, ActiveCharacter.ActionReach() + ActionableThingUnderCursor.MaximumSecondaryActionDistance()))
-                    ActionableThingUnderCursor.DoSecondaryAction(ActiveCharacter);
-                else
-                    AddFlashMessage(ActionableThingUnderCursor.Its().UppercaseFirst() + " too far away.");
+                TrySecondaryAction(ActiveCharacter, ActionableThingUnderCursor, true);
             }
             else if (MouseHandler.Instance.IsLeftClicking(true))
             {

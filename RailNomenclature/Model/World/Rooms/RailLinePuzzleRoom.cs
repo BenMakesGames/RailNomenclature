@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    public class RailLinePuzzleRoom: Room
+    public class RailLinePuzzleRoom : Room
     {
         public RailLinePuzzleRoom(World world)
             : base(world, 2000, 700, "Rail Line")

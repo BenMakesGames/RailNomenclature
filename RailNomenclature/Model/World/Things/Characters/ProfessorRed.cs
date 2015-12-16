@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    public class ProfessorRed: Character
+    public class ProfessorRed : Character
     {
         public const string DESCRIPTION = "Professor Red. An eccentric character, easily excited by ancient American archaeology.";
 

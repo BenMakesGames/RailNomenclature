@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    public class PressurePlate: Switch
+    public class PressurePlate : Switch
     {
         private RGBA _color;
 

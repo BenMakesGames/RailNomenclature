@@ -5,7 +5,6 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    [Serializable]
     public enum SpriteSheetID
     {
         NONE = -1,

@@ -5,7 +5,6 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    [Serializable]
     public enum FontID
     {
         Consolas16,

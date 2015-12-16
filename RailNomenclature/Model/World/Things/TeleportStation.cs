@@ -2,7 +2,7 @@
 
 namespace RailNomenclature
 {
-    public class TeleportStation: Thing
+    public class TeleportStation : Thing
     {
         private int _animation_step = 0;
 

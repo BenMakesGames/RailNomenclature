@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    public class Wall: Switchable
+    public class Wall : Switchable
     {
         private RGBA _color;
 

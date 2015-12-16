@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    public class GameStatePlaying: GameState
+    public class GameStatePlaying : GameState
     {
         private World _world;
 

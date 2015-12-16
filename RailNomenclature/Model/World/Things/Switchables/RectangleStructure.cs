@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    public class RectangleStructure: Switchable
+    public class RectangleStructure : Switchable
     {
         private RGBA _color;
         private RGBA _roof_color;

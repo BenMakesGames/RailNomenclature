@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    public class HomeBase: TeleportStation
+    public class HomeBase : TeleportStation
     {
         public HomeBase(Room r, int x, int y)
             : base(r, x, y, 30, 40, "Home Base")

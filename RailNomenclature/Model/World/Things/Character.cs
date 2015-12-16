@@ -5,11 +5,10 @@ using Microsoft.Xna.Framework;
 
 namespace RailNomenclature
 {
-    [Serializable]
     public class Character: Thing
     {
         protected string _name;
-        protected TargetLocation _target_location;
+        protected MoveTarget _target_location;
 
         public float WalkSpeed { get; protected set; }
 
@@ -57,13 +56,13 @@ namespace RailNomenclature
             if (_target_location != null)
             {
                 if (_ignore_location_history_steps == 0 && _previous_10_locations[0].X == (int)_x_center && _previous_10_locations[0].Y == (int)_y_base)
-                    CancelPath();
+                    StopPath(STOP_PATH_BLOCKED);
                 else
                 {
                     WalkToward(_target_location.X(), _target_location.Y());
 
                     if (WithinDistance(_target_location, 5))
-                        CancelPath();
+                        StopPath(STOP_PATH_ARRIVED);
                 }
             }
         }
@@ -82,27 +81,47 @@ namespace RailNomenclature
             Hop();
         }
 
+        public void SetPath(Thing t, string action)
+        {
+            StopPath(STOP_PATH_CANCELLED);
+
+            _ignore_location_history_steps = 5;
+            _target_location = new MoveTargetThingAction(Location, this, t, action);
+        }
+
         public void SetPath(float x, float y)
         {
             SetPath((int)x, (int)y);
         }
 
-        public void CancelPath()
+        public const int STOP_PATH_ARRIVED = 0;
+        public const int STOP_PATH_CANCELLED = 1;
+        public const int STOP_PATH_BLOCKED = 2;
+
+        public void StopPath(int stopReason)
         {
             if (_target_location != null)
             {
                 Location.RemoveThing(_target_location);
                 _ignore_location_history_steps = 0;
+
+                switch (stopReason)
+                {
+                    case STOP_PATH_ARRIVED: _target_location.OnArrive(); break;
+                    case STOP_PATH_CANCELLED: _target_location.OnCancel(); break;
+                    case STOP_PATH_BLOCKED: _target_location.OnBlocked(); break;
+                }
+
                 _target_location = null;
             }
         }
 
         public void SetPath(int x, int y)
         {
-            CancelPath();
+            StopPath(STOP_PATH_CANCELLED);
 
             _ignore_location_history_steps = 5;
-            _target_location = new TargetLocation(Location, x, y, this);
+            _target_location = new MoveTargetCoordinate(Location, this, x, y);
         }
 
         public override void Step()
@@ -216,7 +235,7 @@ namespace RailNomenclature
 
         public override void MoveTo(Room newLocation, float x, float y)
         {
-            CancelPath();
+            StopPath(STOP_PATH_CANCELLED);
 
             base.MoveTo(newLocation, x, y);
         }

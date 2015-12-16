@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RailNomenclature
 {
-    public class Picture: Thing
+    public class Picture : Thing
     {
         private SpriteSheetID _picture;
         private string _name;

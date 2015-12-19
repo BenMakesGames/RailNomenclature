@@ -83,6 +83,7 @@
     <Compile Include="Model\Util\StringUtil.cs" />
     <Compile Include="Model\Util\Texture2DUtil.cs" />
     <Compile Include="Model\World\Rooms\RailLinePuzzleRoom.cs" />
+    <Compile Include="Model\World\Rooms\SeatingRoom.cs" />
     <Compile Include="Model\World\Things\Characters\ThePlayer.cs" />
     <Compile Include="Model\World\Things\MoveTargets\MoveTargetThingAction.cs" />
     <Compile Include="Model\World\Things\MoveTargets\MoveTargetCoordinate.cs" />
@@ -130,6 +131,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Graphics\move-cursor.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Graphics\rail-map-icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Graphics\rail-map.png">

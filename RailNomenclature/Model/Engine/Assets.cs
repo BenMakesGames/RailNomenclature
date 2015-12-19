@@ -28,6 +28,7 @@ namespace RailNomenclature
             Fonts.Add(FontID.Consolas16, consolas16);
 
             SpriteSheets.Add(SpriteSheetID.RAIL_MAP, LoadSpriteSheet("Graphics/rail-map", 251, 274));
+            SpriteSheets.Add(SpriteSheetID.RAIL_MAP_ICON, LoadSpriteSheet("Graphics/rail-map-icon", 25, 28));
             SpriteSheets.Add(SpriteSheetID.UI_LEFT_PANEL_ICONS, LoadSpriteSheet("Graphics/ui-left-panel", 64, 64));
             SpriteSheets.Add(SpriteSheetID.UI_MOUSE_ICONS, LoadSpriteSheet("Graphics/ui-mouse-actions", 15, 23));
             SpriteSheets.Add(SpriteSheetID.TELEPORTER, LoadSpriteSheet("Graphics/teleporter", 26, 34));

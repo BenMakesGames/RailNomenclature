@@ -54,7 +54,7 @@ namespace RailNomenclature
                 return true;
             };
 
-            Room mapRoom = new Room(this, TheGame.WIDTH, TheGame.HEIGHT, "Map Room");
+            Room mapRoom = new SeatingRoom(this);
 
             LinkLocationsWithDoor(
                 mapRoom,
@@ -62,9 +62,6 @@ namespace RailNomenclature
                 stationEntrance,
                 960 * 2 /3, 960, -10
             );
-
-            new RailMap(mapRoom, 400, 100);
-            new Wall(mapRoom, mapRoom.Width / 2, 99, mapRoom.Width, 99, RGBA.DarkRed);
 
             Room railLineRoom = new RailLinePuzzleRoom(this);
             

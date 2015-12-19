@@ -9,6 +9,7 @@ namespace RailNomenclature
     {
         NONE = -1,
         RAIL_MAP = 0,
+        RAIL_MAP_ICON,
         UI_LEFT_PANEL_ICONS,
         UI_MOUSE_ICONS,
         TELEPORTER,
